@@ -1,0 +1,34 @@
+# Python 缓存和虚拟环境
+__pycache__/
+*.py[cod]
+.venv/
+
+# 数据库：只允许提交完全虚构的演示数据库
+*.db
+!data/demo.db
+data/local_data.db
+data/workbench.db
+data/backups/
+*.db-journal
+*.db-wal
+*.db-shm
+
+# 本地测试和交付文件
+work/
+outputs/
+
+# 本地环境、密钥和覆盖配置
+.env
+.env.*
+!.env.example
+.streamlit/secrets.toml
+*.local.toml
+config.local.toml
+
+# 常见编辑器文件
+.vscode/
+.idea/
+
+# 系统文件
+.DS_Store
+Thumbs.db

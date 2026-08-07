@@ -1,4 +1,7 @@
+import os
+import shutil
 import sqlite3
+import tempfile
 from contextlib import contextmanager
 from datetime import date, datetime, timedelta
 from pathlib import Path
@@ -7,6 +10,7 @@ DB_DIR = Path(__file__).resolve().parent / "data"
 DEMO_DB_PATH = DB_DIR / "demo.db"
 LOCAL_DB_PATH = DB_DIR / "local_data.db"
 LEGACY_DB_PATH = DB_DIR / "workbench.db"
+RUNTIME_DEMO_DB_PATH = Path(tempfile.gettempdir()) / "research_workbench_demo.db"
 DB_PATH = DEMO_DB_PATH
 
 TABLES = {
@@ -59,7 +63,14 @@ def configure_database(mode):
     """按演示或个人模式切换数据库文件。"""
     global DB_PATH
     if mode == "demo":
-        DB_PATH = DEMO_DB_PATH
+        # 公开云端的仓库目录可能只读，先复制演示库到临时可写目录。
+        demo_only = os.getenv("WORKBENCH_DEMO_ONLY", "").strip().lower()
+        if demo_only in {"1", "true", "yes", "on"}:
+            if not RUNTIME_DEMO_DB_PATH.exists() and DEMO_DB_PATH.exists():
+                shutil.copy2(DEMO_DB_PATH, RUNTIME_DEMO_DB_PATH)
+            DB_PATH = RUNTIME_DEMO_DB_PATH
+        else:
+            DB_PATH = DEMO_DB_PATH
     elif mode == "personal":
         DB_PATH = LOCAL_DB_PATH
     else:
